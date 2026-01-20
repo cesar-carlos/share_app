@@ -16,6 +16,7 @@ const _backgroundColor = Color.fromARGB(200, 255, 255, 255);
 const _autoCloseDelay = Duration(seconds: 30);
 const _shareDelay = Duration(milliseconds: 300);
 const _borderRadius = 5.0;
+const _closeAfterShareDelay = Duration(seconds: 2);
 
 class HomePage extends StatefulWidget {
   final String arguments;
@@ -45,7 +46,6 @@ class _HomePageState extends State<HomePage> with WindowListener {
       _decodeResult?.fold(
         (files) {
           onSharePressed(files);
-          onAutoClose();
         },
         (error) {
           final failure = error as AppFailure;
@@ -109,18 +109,20 @@ class _HomePageState extends State<HomePage> with WindowListener {
   Future<void> onSharePressed(List<ShareFile> files) async {
     await Future.delayed(_shareDelay);
 
+    _cancelAutoClose();
+    _startMonitoringShareDialog();
+
     final result = await ShareFileService.shareFiles(files);
 
     result.fold(
       (_) {
-        log('Successfully shared ${files.length} file(s)');
-        _cancelAutoClose();
-        _startMonitoringShareDialog();
+        log('Share dialog opened for ${files.length} file(s)');
         focusNode.requestFocus();
       },
       (error) {
         final failure = error as AppFailure;
         log('Share failure: ${failure.message}');
+        _stopMonitoringShareDialog();
         _showError(failure);
       },
     );
@@ -149,7 +151,11 @@ class _HomePageState extends State<HomePage> with WindowListener {
     if (_isMonitoringShareDialog && _hasLostFocus) {
       log('Window regained focus - share dialog closed');
       _stopMonitoringShareDialog();
-      exit(0);
+      Future.delayed(_closeAfterShareDelay, () {
+        if (mounted) {
+          exit(0);
+        }
+      });
     }
   }
 
