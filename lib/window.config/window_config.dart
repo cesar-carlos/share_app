@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:share_app/window.config/window_event.dart';
 import 'package:window_manager/window_manager.dart';
 
+const _windowWidth = 300.0;
+const _windowHeight = 150.0;
+const _windowTitle = 'Share App';
+
 class WindowConfig {
   Future<void> config() async {
     await windowManager.ensureInitialized();
@@ -21,9 +25,9 @@ class WindowConfig {
 
   WindowOptions _windowOptions() => const WindowOptions(
         center: true,
-        title: 'Share App',
-        size: ui.Size(550, 700),
-        minimumSize: ui.Size(550, 700),
+        title: _windowTitle,
+        size: ui.Size(_windowWidth, _windowHeight),
+        minimumSize: ui.Size(_windowWidth, _windowHeight),
         backgroundColor: Colors.transparent,
         titleBarStyle: TitleBarStyle.hidden,
         skipTaskbar: true,
