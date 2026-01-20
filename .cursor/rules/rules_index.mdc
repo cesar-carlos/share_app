@@ -1,0 +1,276 @@
+---
+description: Cursor Rules Index - Available rules and guidelines
+alwaysApply: true
+---
+
+# Cursor Rules
+
+This folder contains **Project Rules** for Cursor, which are automatically applied when working on project files. The rules provide persistent context for the AI, ensuring code consistency and quality.
+
+## How They Work
+
+Rules are `.mdc` (Markdown Cursor) files that contain:
+
+- **Frontmatter YAML**: Metadata about the rule
+  - `description`: Brief description of the rule
+  - `globs`: File patterns to which the rule applies
+  - `alwaysApply`: Defines whether the rule should always be applied
+
+- **Markdown Content**: The rules and guidelines themselves
+
+## Important Behavioral Rules
+
+### Commits and Documentation
+
+- ❌ **NEVER make git commits** unless explicitly requested by the user
+- ❌ **NEVER create documentation** (README.md, comments, etc.) unless explicitly requested
+- ❌ **NEVER push to repository** unless explicitly requested
+- ✅ **ONLY commit/push/document** when the user explicitly asks for it
+- ✅ Always ask for confirmation before committing or pushing changes
+- ✅ Code should be self-explanatory through clear naming
+
+These rules ensure that the AI assistant respects user control over version control and documentation decisions.
+
+## Available Rules
+
+### Generic Rules (Reusable Across Projects)
+
+#### 1. `general_rules.mdc`
+
+**Applied to**: `lib/**/*.dart`, `test/**/*.dart`
+
+General project rules and core principles:
+- **DO NOT create documentation automatically** (only when requested)
+- **DO NOT create documentation files** without explicit request
+- **DO NOT add unnecessary comments** - code should be self-explanatory
+- Comments only to explain "why", not "what"
+- Self-explanatory code through clear naming
+- Avoid magic numbers - use named constants
+- **PRIORITIZE component creation** for layout standardization
+- **AVOID code duplication** - extract repeated patterns into components
+- Core principles: concise code, functional/declarative patterns, composition over inheritance
+- Keep code clean and maintainable
+
+**Use**: General guidelines for writing clean, self-explanatory code.
+
+#### 2. `solid_principles.mdc`
+
+**Applied to**: `lib/**/*.dart`
+
+SOLID principles detailed guide:
+- Single Responsibility Principle (SRP)
+- Open/Closed Principle (OCP)
+- Liskov Substitution Principle (LSP)
+- Interface Segregation Principle (ISP)
+- Dependency Inversion Principle (DIP)
+- Examples for each principle
+- Common violations
+
+**Use**: Ensure SOLID compliance in code design.
+
+#### 3. `coding_style.mdc`
+
+**Applied to**: `lib/**/*.dart`, `test/**/*.dart`
+
+Dart style guide (2026 updated):
+- **Language & Syntax**: Type declarations, const constructors, arrow syntax, expression bodies, trailing commas, line length
+- Naming conventions (Effective Dart 2026)
+- Import organization
+- Function names (start with verbs)
+- Boolean variables (auxiliary verbs: isLoading, hasError, canProceed)
+- Const and final usage
+- Functions and methods
+- Classes and constructors
+- Dot shorthands
+- Formatting guidelines
+- Tear-off for widgets
+- Modern Dart 3+ features (Pattern matching, Records, Switch expressions)
+- Async/await best practices
+- Streams
+- Logging
+- JSON serialization
+
+**Use**: Maintain consistent Dart coding style based on latest Effective Dart guidelines.
+
+#### 4. `null_safety.mdc`
+
+**Applied to**: `lib/**/*.dart`
+
+Null safety best practices:
+- Nullable/non-nullable type declaration
+- Variable initialization
+- Null checks and null-aware operators
+- Nullable collections
+- Functions and methods with null safety
+- External APIs and JSON parsing
+- Validation and documentation
+
+**Use**: Ensure proper null safety usage throughout the codebase.
+
+#### 5. `testing.mdc`
+
+**Applied to**: `test/**/*.dart`
+
+Testing patterns and best practices:
+- Unit test structure
+- Widget tests
+- AAA pattern (Arrange, Act, Assert)
+- Test naming conventions
+- Isolation and mocking
+- **package:checks** for expressive assertions
+- Coverage recommendations
+
+**Use**: Write clean, maintainable tests with proper structure.
+
+#### 6. `flutter_widgets.mdc`
+
+**Applied to**: `lib/presentation/**/*.dart`, `lib/shared/**/*.dart`, `lib/page/**/*.dart`
+
+Flutter widgets best practices (2026 updated):
+- Stateless vs StatefulWidget
+- **Widget Structure & UI**: Break down large widgets, private widget classes, flatten widget trees, proper padding
+- Performance and optimization
+- Const widgets
+- Private widget classes (not helper methods)
+- Tear-offs for widgets
+- Widget composition
+- Layout and responsive design (LayoutBuilder, Expanded, Flexible, Wrap, etc.)
+- Material 3 theming (ColorScheme.fromSeed, ThemeExtension, WidgetStateProperty)
+- Color scheme best practices
+- Font best practices
+- Accessibility (A11Y)
+- Spacing constants
+- Network images
+- RepaintBoundary
+- ListView.builder for performance
+
+**Use**: Build efficient, reusable Flutter widgets with modern Material 3 best practices.
+
+#### 7. `ui_ux_design.mdc`
+
+**Applied to**: `lib/**/*.dart`, `lib/page/**/*.dart`, `lib/presentation/**/*.dart`
+
+UI/UX design principles for Windows desktop apps:
+- Visual hierarchy, color palette, typography, consistency
+- Desktop navigation patterns (MenuBar, NavigationRail, ToolBar)
+- Feedback mechanisms (loading, success, error states)
+- Mouse interactions (hover states, cursor changes)
+- Animations and performance
+- Accessibility (WCAG 2.1 AA, semantic labels, keyboard navigation)
+- Responsive design (window size adaptation, window management)
+- Information architecture and menu structure
+- Forms and validation
+- Desktop-specific considerations (file operations, system integration, auto-close)
+
+**Use**: Design intuitive, accessible, and visually appealing Windows desktop applications.
+
+### Project-Specific Rules (Share App)
+
+#### 8. `share_app_specifics.mdc`
+
+**Applied to**: `lib/**/*.dart`, `pubspec.yaml`
+
+Project-specific rules for Share App (Windows desktop file sharing):
+- **Project Type**: Windows Desktop Application
+- **Architecture**: Simple (no Clean Architecture)
+- **Dependencies**: share_plus, window_manager, file_selector, image_picker, path_provider, process_run
+- **Project Structure**: model/, page/, service/, window.config/
+- **Entry Point Pattern**: WindowConfig.config() before runApp()
+- **Desktop-specific considerations**: exit(0), keyboard events, auto-close
+- **Data Flow**: Command-line args → WindowConfig → HomePage → ShareFileService
+- **Patterns**: Static service methods, late initialization, resource disposal
+
+**Use**: This is specific to Share App for Windows desktop file sharing.
+
+## Rules Hierarchy
+
+```
+Generic Rules (Reusable)
+├── general_rules.mdc (General guidelines + Core principles)
+├── solid_principles.mdc (SOLID principles)
+├── coding_style.mdc (Dart style 2026 + Language & Syntax)
+├── null_safety.mdc (Null safety)
+├── testing.mdc (Testing patterns)
+├── flutter_widgets.mdc (Flutter widgets)
+└── ui_ux_design.mdc (UI/UX design principles)
+
+Project-Specific Rules (Share App)
+└── share_app_specifics.mdc (All project-specific rules)
+```
+
+## Summary
+
+**Total Rules**: 8 files
+- 7 generic rules (reusable across projects)
+- 1 project-specific rule (Share App)
+
+**Removed** (not applicable to this project):
+- `architecture.mdc` - Clean Architecture overview (project uses simple architecture)
+- `coding_conventions.mdc` - Clean Architecture patterns (project uses simple architecture)
+
+## Creating New Rules
+
+To create a new rule:
+
+1. Create a `.mdc` file in `.cursor/rules/` folder
+2. Add YAML frontmatter:
+   ```yaml
+   ---
+   description: Rule description
+   globs: ["pattern/**/*.dart"]
+   alwaysApply: true
+   ---
+   ```
+3. Add the rule content in Markdown
+
+## Rule Example
+
+```mdc
+---
+description: Example rule for validation
+globs: ["lib/domain/**/*.dart"]
+alwaysApply: true
+---
+
+# Validation Rule
+
+- All entities must validate their data in the constructor
+- Value objects must throw specific exceptions for invalid values
+- Use cases must validate parameters before executing
+```
+
+## Copying Rules to Other Projects
+
+When copying these rules to other projects:
+
+### Keep Generic Rules
+
+These are reusable across any Flutter/Dart project:
+- `general_rules.mdc` - General guidelines
+- `solid_principles.mdc` - SOLID principles
+- `coding_style.mdc` - Dart style guide (2026)
+- `null_safety.mdc` - Null safety
+- `testing.mdc` - Testing patterns
+- `flutter_widgets.mdc` - Flutter widgets
+- `ui_ux_design.mdc` - UI/UX design principles
+
+### Replace Project-Specific Rules
+
+Remove or replace project-specific rules:
+- `share_app_specifics.mdc` - Replace with your project's specific rules
+
+### Customize as Needed
+
+Adjust rules based on:
+- Your project's architecture (Clean Architecture, MVVM, Simple, etc.)
+- Your project's dependencies (state management, routing, etc.)
+- Your team's preferences and conventions
+- Specific requirements of your domain
+
+## References
+
+- [Cursor Documentation on Rules](https://docs.cursor.com/en/context/rules)
+- [Flutter AI Rules](https://docs.flutter.dev/ai/ai-rules)
+- [Effective Dart: Style Guide](https://dart.dev/effective-dart/style)
+- [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
+- [Flutter Architecture](https://docs.flutter.dev/app-architecture)

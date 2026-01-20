@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter pub:*)",
+      "Bash(flutter test:*)",
+      "WebSearch",
+      "Bash(flutter analyze:*)",
+      "Bash(dart fix:*)",
+      "Bash(git add:*)",
+      "Bash(git restore:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(for:*)",
+      "Bash(do cp:*)",
+      "Bash(done:*)",
+      "Bash(do sed:*)",
+      "Bash(ls:*)",
+      "Bash(xargs:*)",
+      "Bash(dart format:*)",
+      "Bash(dart analyze:*)",
+      "Bash(dart pub deps:*)",
+      "Bash(findstr:*)",
+      "Bash(git config:*)"
+    ]
+  }
+}

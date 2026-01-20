@@ -1,0 +1,4 @@
+class DemoArgs {
+  static String get args =>
+      'eyJTaGFyZUZpbGVQYXRocyI6W3siSWQiOiI1NUQ2NUVDNUI1RDczRTQ5MkUxNjczRTMyNTFDMTIxNjc4ODMiLCJOYW1lIjoiMjQ2MTJfMS5KUEciLCJQYXRoIjoiQzpcXFVzZXJzXFxjZXNhclxcQXBwRGF0YVxcTG9jYWxcXFRlbXAifV19';
+}

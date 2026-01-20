@@ -1,0 +1,456 @@
+# UI/UX Design Principles for Desktop Apps
+
+Guidelines for creating intuitive, accessible, and visually appealing Windows desktop applications with Flutter.
+
+## Visual Design
+
+### Visual Hierarchy
+- ✅ Establish clear visual hierarchy to guide user attention
+- ✅ Use size, color, and spacing to create hierarchy
+- ✅ Most important elements should be most prominent
+- ✅ Use whitespace effectively to separate content
+
+**✅ Good visual hierarchy:**
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    // Primary: Large title
+    Text('Welcome', style: Theme.of(context).textTheme.displayLarge),
+    SizedBox(height: 8),
+    // Secondary: Subtitle
+    Text('Sign in to continue', style: Theme.of(context).textTheme.bodyMedium),
+    SizedBox(height: 24),
+    // Tertiary: Action button
+    ElevatedButton(
+      onPressed: () {},
+      child: const Text('Get Started'),
+    ),
+  ],
+)
+```
+
+### Color Palette
+- ✅ Use `ColorScheme.fromSeed()` for cohesive color palette
+- ✅ Maintain 60-30-10 rule (60% primary, 30% secondary, 10% accent)
+- ✅ Ensure sufficient contrast (WCAG 2.1 AA: 4.5:1 for normal text)
+- ✅ Use consistent colors across the application
+
+### Typography
+- ✅ Use typography from `Theme.of(context).textTheme`
+- ✅ Limit to 1-2 font families (system fonts preferred)
+- ✅ Use relative text sizes that scale with system settings
+- ✅ Line height: 1.4x to 1.6x of font size
+
+### Consistency
+- ✅ Develop and adhere to a design system
+- ✅ Use consistent terminology throughout interface
+- ✅ Maintain consistent positioning of recurring elements
+- ✅ Ensure visual consistency across different sections
+
+## Interaction Design
+
+### Desktop Navigation Patterns
+- ✅ Use familiar desktop UI components (MenuBar, ToolBar, NavigationRail)
+- ✅ Provide clear calls-to-action
+- ✅ Implement keyboard shortcuts for common actions
+- ✅ Support both mouse and keyboard navigation
+
+**✅ Good desktop navigation:**
+```dart
+Row(
+  children: [
+    NavigationRail(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: (index) {
+        setState(() => _selectedIndex = index);
+      },
+      labelType: NavigationRailLabelType.all,
+      destinations: const [
+        NavigationRailDestination(icon: Icon(Icons.home), label: Text('Home')),
+        NavigationRailDestination(icon: Icon(Icons.settings), label: Text('Settings')),
+      ],
+    ),
+    const VerticalDivider(thickness: 1, width: 1),
+    Expanded(child: _getPage(_selectedIndex)),
+  ],
+)
+```
+
+### Feedback Mechanisms
+- ✅ Provide clear feedback for user actions
+- ✅ Use loading indicators (CircularProgressIndicator, LinearProgressIndicator)
+- ✅ Provide clear error messages and recovery options
+- ✅ Show success confirmations for important actions
+- ✅ Use `SnackBar` for non-intrusive notifications
+
+**✅ Good feedback pattern:**
+```dart
+ElevatedButton(
+  onPressed: () async {
+    // Show loading
+    setState(() => _isLoading = true);
+    try {
+      await _submitForm();
+      // Show success
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Saved successfully')),
+        );
+      }
+    } catch (e) {
+      // Show error
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  },
+  child: _isLoading
+      ? const SizedBox(
+          width: 16, height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        )
+      : const Text('Submit'),
+)
+```
+
+### Mouse Interactions
+- ✅ Implement hover states for interactive elements
+- ✅ Use `MouseRegion` for cursor changes
+- ✅ Support right-click context menus when appropriate
+- ✅ Provide visual feedback on hover
+
+**✅ Good hover pattern:**
+```dart
+InkWell(
+  onHover: (isHovered) {
+    setState(() => _isHovered = isHovered);
+  },
+  child: Container(
+    decoration: BoxDecoration(
+      color: _isHovered ? Colors.blue.withOpacity(0.1) : Colors.transparent,
+    ),
+    child: const Text('Hover me'),
+  ),
+)
+```
+
+### Animations
+- ✅ Use animations judiciously to enhance UX
+- ✅ Keep animations under 300ms for responsive feel
+- ✅ Use `AnimatedBuilder` for complex animations
+- ✅ Wrap frequently animating widgets in `RepaintBoundary`
+
+## Accessibility (A11Y)
+
+### WCAG Guidelines
+- ✅ Ensure text contrast ratio of at least 4.5:1
+- ✅ Large text (18pt+): minimum 3:1 contrast ratio
+- ✅ Test UI remains usable when users increase system font size
+
+### Semantic Labels
+- ✅ Use `Semantics` widget for clear, descriptive labels
+- ✅ Provide semantic labels for icon-only buttons
+
+**✅ Good accessibility:**
+```dart
+Semantics(
+  button: true,
+  label: 'Submit form',
+  hint: 'Creates a new user account',
+  child: IconButton(
+    icon: const Icon(Icons.check),
+    onPressed: _submit,
+  ),
+)
+```
+
+### Keyboard Navigability
+- ✅ Ensure all interactive elements are keyboard accessible
+- ✅ Use `FocusNode` and `FocusScope` for keyboard navigation
+- ✅ Provide visible focus indicators
+- ✅ Support Tab navigation
+- ✅ Implement keyboard shortcuts (Ctrl+S, Ctrl+C, etc.)
+
+**✅ Good keyboard navigation:**
+```dart
+class MyWidget extends StatefulWidget {
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyboardListener(
+      focusNode: _focusNode,
+      onKeyEvent: (event) {
+        if (event is KeyDownEvent) {
+          // Handle Ctrl+S
+          if (event.logicalKey == LogicalKeyboardKey.keyS &&
+              HardwareKeyboard.instance.isControlPressed) {
+            _save();
+          }
+        }
+      },
+      child: // Your widget content
+    );
+  }
+}
+```
+
+### Screen Reader Testing
+- ✅ Regularly test with Narrator (Windows) or NVDA
+- ✅ Use `excludeSemantics` to hide decorative elements
+- ✅ Announce dynamic content changes
+
+## Performance Optimization
+
+### Asset Optimization
+- ✅ Implement `loadingBuilder` and `errorBuilder` for images
+- ✅ Optimize images and assets to minimize load times
+- ✅ Use appropriate image formats
+
+**✅ Good image handling:**
+```dart
+Image.file(
+  file,
+  gaplessPlayback: true,
+  errorBuilder: (context, error, stackTrace) {
+    return const Icon(Icons.error);
+  },
+)
+```
+
+### Lazy Loading
+- ✅ Use `ListView.builder` for long lists
+- ✅ Implement pagination for large datasets
+- ✅ Load non-critical resources on demand
+
+### Code Optimization
+- ✅ Use `const` widgets to reduce rebuilds
+- ✅ Extract widgets that change frequently
+- ✅ Use `RepaintBoundary` for complex widgets
+- ✅ Use `compute()` for expensive operations
+
+## Responsive Design
+
+### Window Size Adaptation
+- ✅ Use `LayoutBuilder` for responsive layouts
+- ✅ Use `Expanded` and `Flexible` for flexible layouts
+- ✅ Use `MediaQuery` to get window dimensions
+- ✅ Support window resizing gracefully
+
+**✅ Good responsive layout:**
+```dart
+LayoutBuilder(
+  builder: (context, constraints) {
+    if (constraints.maxWidth > 1200) {
+      return const WideLayout();
+    } else if (constraints.maxWidth > 800) {
+      return const MediumLayout();
+    }
+    return const CompactLayout();
+  },
+)
+```
+
+### Window Management
+- ✅ Set minimum window size to prevent UI breaking
+- ✅ Handle window resize events
+- ✅ Use `window_manager` for window control
+- ✅ Support multi-window if appropriate
+
+**✅ Good window management:**
+```dart
+// In main.dart or window config
+await windowManager.ensureInitialized();
+
+const windowOptions = WindowOptions(
+  size: Size(800, 600),
+  minimumSize: Size(400, 300),
+  center: true,
+);
+
+await windowManager.waitUntilReadyToShow(windowOptions, () async {
+  await windowManager.show();
+  await windowManager.focus();
+});
+```
+
+## Information Architecture
+
+### Content Organization
+- ✅ Organize content logically for easy access
+- ✅ Use clear labeling and categorization
+- ✅ Implement search functionality for complex apps
+- ✅ Create clear user flows
+
+### Menu Structure
+- ✅ Use standard menu bar patterns (File, Edit, View, Help)
+- ✅ Group related commands logically
+- ✅ Use keyboard shortcuts consistently
+- ✅ Follow Windows UI guidelines
+
+**✅ Good menu bar pattern:**
+```dart
+MenuBar(
+  children: [
+    SubmenuButton(
+      child: const Text('File'),
+      children: [
+        MenuItemButton(
+          shortcut: const SingleActivator(LogicalKeyboardKey.keyO, control: true),
+          onPressed: _openFile,
+          child: const Text('Open...'),
+        ),
+        MenuItemButton(
+          shortcut: const SingleActivator(LogicalKeyboardKey.keyS, control: true),
+          onPressed: _save,
+          child: const Text('Save'),
+        ),
+      ],
+    ),
+  ],
+)
+```
+
+## Forms
+
+### Form Design
+- ✅ Design form layouts that work on desktop
+- ✅ Use appropriate input types (TextField, dropdowns, checkboxes)
+- ✅ Implement inline validation
+- ✅ Provide clear error messaging
+- ✅ Support Enter key for form submission
+
+**✅ Good form pattern:**
+```dart
+TextFormField(
+  decoration: const InputDecoration(
+    labelText: 'Email',
+    hintText: 'Enter your email',
+    border: OutlineInputBorder(),
+  ),
+  keyboardType: TextInputType.emailAddress,
+  textInputAction: TextInputAction.next,
+  validator: (value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your email';
+    }
+    if (!value.contains('@')) {
+      return 'Please enter a valid email';
+    }
+    return null;
+  },
+  onFieldSubmitted: (_) => _focusNode.nextFocus(),
+)
+```
+
+## Testing and Iteration
+
+### Testing
+- ✅ Test on different screen resolutions
+- ✅ Test window resizing behavior
+- ✅ Test keyboard navigation
+- ✅ Conduct usability testing
+- ✅ Use Flutter DevTools for performance profiling
+
+### User Feedback
+- ✅ Implement analytics to track user behavior
+- ✅ Regularly gather and incorporate user feedback
+- ✅ Conduct A/B testing for critical design decisions
+- ✅ Monitor performance metrics
+
+## Desktop-Specific Considerations
+
+### File Operations
+- ✅ Use standard Windows file dialogs (`file_selector`)
+- ✅ Support drag and drop when appropriate
+- ✅ Handle file permissions correctly
+- ✅ Provide feedback for long file operations
+
+### System Integration
+- ✅ Follow Windows 11 design guidelines (Fluent Design)
+- ✅ Use native Windows controls when possible
+- ✅ Support system dark/light mode
+- ✅ Respect system font settings
+
+### Auto-Close Behavior
+- ✅ Consider auto-close for simple utility apps
+- ✅ Warn user before closing with unsaved changes
+- ✅ Use `exit(0)` for clean app termination
+
+**✅ Good auto-close pattern:**
+```dart
+// Auto-close after 30 seconds of inactivity (for simple utility apps)
+Timer? _inactivityTimer;
+
+void _resetInactivityTimer() {
+  _inactivityTimer?.cancel();
+  _inactivityTimer = Timer(const Duration(seconds: 30), () {
+    exit(0);
+  });
+}
+
+@override
+void initState() {
+  super.initState();
+  _resetInactivityTimer();
+}
+
+@override
+Widget build(BuildContext context) {
+  return MouseRegion(
+    onHover: (_) => _resetInactivityTimer(),
+    child: // Your content
+  );
+}
+```
+
+## Documentation
+
+### Design System
+- ✅ Maintain a comprehensive style guide
+- ✅ Document design patterns and component usage
+- ✅ Create user flow diagrams for complex interactions
+- ✅ Keep design assets organized
+
+## Checklist
+
+When designing UI/UX for desktop apps:
+
+- [ ] Visual hierarchy is clear and guides user attention
+- [ ] Color palette is cohesive
+- [ ] Typography is readable and hierarchical
+- [ ] Contrast ratios meet WCAG 2.1 AA standards (4.5:1)
+- [ ] Navigation is intuitive and follows Windows patterns
+- [ ] User actions have clear feedback
+- [ ] Loading states are indicated
+- [ ] Error messages are clear and actionable
+- [ ] Hover states are implemented
+- [ ] Keyboard navigation and shortcuts work
+- [ ] Focus indicators are visible
+- [ ] Semantic labels are provided
+- [ ] Images have loading and error states
+- [ ] Lists use lazy loading (ListView.builder)
+- [ ] Layouts are responsive to window resizing
+- [ ] Forms have inline validation
+- [ ] Performance is optimized (const widgets, RepaintBoundary)
+- [ ] Design is consistent across the application
+- [ ] Accessibility has been tested with Narrator/NVDA
+- [ ] Minimum window size is set
+- [ ] File operations use standard dialogs
+- [ ] Auto-close is considered for simple apps
